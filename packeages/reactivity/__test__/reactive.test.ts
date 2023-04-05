@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { reactive } from '../src/reactive'
-import { effect } from '../src/effect'
+import { effect, stop } from '../src/effect'
 
 describe('响应式测试', () => {
   it('响应式基本测试', () => {
@@ -33,7 +33,16 @@ describe('响应式测试', () => {
     expect(ans).toBe('dummy is 100')
   })
 
-  it('schedular', () => {
-
+  it('stop函数测试', () => {
+    let dummy
+    const obj = reactive({ prop: 1 })
+    const runner = effect(() => {
+      dummy = obj.prop
+    })
+    obj.prop = 2
+    expect(dummy).toBe(2)
+    stop(runner)
+    obj.prop = 3
+    expect(dummy).toBe(2)
   })
 })
