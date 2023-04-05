@@ -9,6 +9,7 @@ class ReactiveEffect {
   private fn: any
   public schedular: any
   deps = [] // 用来存放这个effect函数被哪些reactive对象依赖
+  active = true // 当前的副作用函数对象是否活跃
 
   constructor(fn, schedular) {
     this.fn = fn
@@ -22,7 +23,10 @@ class ReactiveEffect {
   }
 
   stop() {
-    cleanupEffect(this)
+    if (this.active) {
+      cleanupEffect(this)
+      this.active = false
+    }
   }
 }
 
@@ -64,10 +68,8 @@ export function stop(runner) {
  *      key: Set[fn1, fn2, fn3]
  *    }
  */
-let i = 0
 const targetMap = new Map()
 export function track(target, key) {
-  console.log(i++)
   // target => key => values
   let depsMap = targetMap.get(target)
 
