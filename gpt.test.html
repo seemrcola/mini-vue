@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bouncing Marquee on Video</title>
+	<style>
+		.container {
+			position: relative;
+		}
+
+		.video {
+			width: 100%;
+		}
+
+		.marquee {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 80%;
+			height: 50px;
+			background-color: rgba(255, 255, 255, 0.5);
+			border: 1px solid #ccc;
+			overflow: hidden;
+			z-index: 1;
+		}
+
+		.marquee-text {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			animation: bounce 8s linear infinite;
+		}
+
+		.marquee-text p {
+			margin-right: 100px;
+			font-size: 20px;
+			font-weight: bold;
+			color: #333;
+			text-shadow: 1px 1px #fff;
+			animation: flicker 1s infinite;
+			opacity: 0.9;
+		}
+
+		.marquee-text p:nth-child(2n) {
+			margin-right: 0;
+		}
+
+		@keyframes bounce {
+			0% {
+				transform: translateX(-50%) translateY(0%);
+			}
+			25% {
+				transform: translateX(-50%) translateY(-50%);
+			}
+			50% {
+				transform: translateX(-50%) translateY(0%);
+			}
+			75% {
+				transform: translateX(-50%) translateY(50%);
+			}
+			100% {
+				transform: translateX(-50%) translateY(0%);
+			}
+		}
+
+		@keyframes flicker {
+			0% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.8;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<video class="video" src="your-video.mp4" controls></video>
+		<div class="marquee">
+			<div class="marquee-text">
+				<p>This is the first message</p>
+				<p>This is the second message</p>
+				<p>This is the third message</p>
+				<p>This is the fourth message</p>
+				<p>This is the fifth message</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
