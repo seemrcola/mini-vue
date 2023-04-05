@@ -2,13 +2,13 @@
   "name": "mini-vue",
   "version": "1.0.0",
   "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@antfu/eslint-config": "^0.38.4",
     "eslint": "^8.34.0",
