@@ -88,7 +88,9 @@ export function track(target, key) {
     deps = new Set()
     depsMap.set(key, deps)
   }
-
+  // 当只是读取reactive对象的属性 而不是effect函数中读取的话 是没有activeEffect的
+  if (!activeEffect)
+    return
   deps.add(activeEffect)
   // 反向收集一下 使得activeEffect知道自己是在哪些deps里 以后可以根据这个删除deps中的effect
   activeEffect.deps.push(deps)

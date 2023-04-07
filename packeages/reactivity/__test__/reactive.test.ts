@@ -3,6 +3,11 @@ import { reactive } from '../src/reactive'
 import { effect, stop } from '../src/effect'
 
 describe('响应式测试', () => {
+  it('happy path', () => {
+    const obj = reactive({ a: 100 })
+    expect(obj.a).toBe(100)
+  })
+
   it('响应式基本测试', () => {
     // 受影响数据
     let dummy = 0
