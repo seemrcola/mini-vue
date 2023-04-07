@@ -1,3 +1,5 @@
+import { extend } from '../../share/index'
+
 let activeEffect: any
 
 /**
@@ -10,6 +12,7 @@ class ReactiveEffect {
   public schedular: any
   deps = [] // 用来存放这个effect函数被哪些reactive对象依赖
   active = true // 当前的副作用函数对象是否活跃
+  onStop?: () => void
 
   constructor(fn, schedular) {
     this.fn = fn
@@ -25,6 +28,8 @@ class ReactiveEffect {
   stop() {
     if (this.active) {
       cleanupEffect(this)
+      if (this.onStop)
+        this.onStop()
       this.active = false
     }
   }
@@ -39,9 +44,9 @@ class ReactiveEffect {
  */
 export function effect(fn: any, options: any = {}) {
   // effect => runner() => fn => return
-  const { schedular } = options
   // 拿到reactiveEffect的实例
-  const _effect = new ReactiveEffect(fn, schedular)
+  const _effect = new ReactiveEffect(fn, options.schedular)
+  extend(_effect, options)
   // 执行run方法相当于执行fn
   _effect.run()
   // 拿到effect实例的run方法（相当于拿到ReactiveEffect实例下的fn）
