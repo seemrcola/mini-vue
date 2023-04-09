@@ -1,11 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
-import { reactive } from '../src/reactive'
+import { isReactive, reactive } from '../src/reactive'
 import { effect, stop } from '../src/effect'
 
 describe('响应式测试', () => {
   it('happy path', () => {
-    const obj = reactive({ a: 100 })
+    const original = { a: 100 }
+    const obj = reactive(original)
     expect(obj.a).toBe(100)
+    expect(isReactive(obj)).toBe(true)
+    expect(isReactive(original)).toBe(false)
   })
 
   it('响应式基本测试', () => {

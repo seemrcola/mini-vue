@@ -1,7 +1,15 @@
 import { track, trigger } from './effect'
+import { ReactiveFlags } from './enums'
 
 function createGetter(isReadonly = false) {
   return function get(target, key) {
+    // 当我们是想读取is_reactive的时候 直接return一个结果就行
+    if (key === ReactiveFlags.IS_REACTIVE)
+      return !isReadonly
+    // 当我们是想读取is_readonly的时候 直接return一个结果就行
+    if (key === ReactiveFlags.IS_READONLY)
+      return isReadonly
+
     const res = Reflect.get(target, key)
     if (!isReadonly)
       track(target, key)
