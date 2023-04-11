@@ -1,6 +1,7 @@
 import { extend } from '../../share/index'
 
 let activeEffect: any
+let shouldTrack: boolean
 
 /**
  * ReactiveEfect 类
@@ -11,7 +12,7 @@ class ReactiveEffect {
   private fn: any
   public schedular: any
   deps = [] // 用来存放这个effect函数被哪些reactive对象依赖
-  active = true // 当前的副作用函数对象是否活跃
+  active = true // 当前的副作用函数对象是否活跃(是否stop)
   onStop?: () => void
 
   constructor(fn, schedular) {
@@ -20,14 +21,22 @@ class ReactiveEffect {
   }
 
   run() {
+    // stop状态直接return this.fn
+    if (!this.active)
+      return this.fn()
+    // 非stop进行收集
+    shouldTrack = true
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     activeEffect = this
-    return this.fn()
+    const res = this.fn() // fn函数执行的时候会有一个get操作 在此之前我们将shouldTrack设置为了false
+    shouldTrack = false
+    return res
   }
 
   stop() {
     if (this.active) {
       cleanupEffect(this)
+      // stop的时候允许用户执行一个自己的函数
       if (this.onStop)
         this.onStop()
       this.active = false
@@ -75,9 +84,15 @@ export function stop(runner) {
  */
 const targetMap = new Map()
 export function track(target, key) {
+  if (!isTracking())
+    return
+
+  // 这里有个小问题 当 trigger 触发的 effect函数 执行的时候，依然会执行这个track
+  // 不过执行到deps.has的时候就会停止，所以也不算大问题
+  console.log('track')
+
   // target => key => values
   let depsMap = targetMap.get(target)
-
   if (!depsMap) {
     depsMap = new Map()
     targetMap.set(target, depsMap)
@@ -88,11 +103,12 @@ export function track(target, key) {
     deps = new Set()
     depsMap.set(key, deps)
   }
-  // 当只是读取reactive对象的属性 而不是effect函数中读取的话 是没有activeEffect的
-  if (!activeEffect)
+  // 如果已经有了就不收集了 解决了bug 1
+  if (deps.has(activeEffect))
     return
   deps.add(activeEffect)
   // 反向收集一下 使得activeEffect知道自己是在哪些deps里 以后可以根据这个删除deps中的effect
+  // bug 1 => 其实这里有个问题， 当trigger操作触发effect函数的时候，get操作会被重新执行一次
   activeEffect.deps.push(deps)
 }
 
@@ -115,4 +131,15 @@ function cleanupEffect(effect) {
     // dep is a Set
     dep.delete(effect)
   })
+  effect.deps.length = 0
+}
+
+function isTracking() {
+  // 当只是读取reactive对象的属性 而不是effect函数中读取的话 是没有activeEffect的
+  if (!activeEffect)
+    return false
+  // 当处于不需要收集的时候不进行收集
+  if (!shouldTrack)
+    return false
+  return true
 }
