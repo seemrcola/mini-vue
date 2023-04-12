@@ -1,5 +1,7 @@
+import { isObject } from '../../share'
 import { track, trigger } from './effect'
 import { ReactiveFlags } from './enums'
+import { reactive, readonly } from './reactive'
 
 function createGetter(isReadonly = false) {
   return function get(target, key) {
@@ -11,6 +13,10 @@ function createGetter(isReadonly = false) {
       return isReadonly
 
     const res = Reflect.get(target, key)
+    // 默认深度监听
+    if (isObject(res))
+      return isReadonly ? readonly(res) : reactive(res)
+
     if (!isReadonly)
       track(target, key)
     return res

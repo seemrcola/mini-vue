@@ -18,4 +18,16 @@ describe('响应式测试', () => {
     read.a = 200 // 触发set
     expect(console.warn).toBeCalled()
   })
+
+  it('readonly嵌套', () => {
+    const outer = {
+      name: 1,
+      inner: {
+        name: 100,
+      },
+    }
+    const data = readonly(outer)
+    expect(isReadonly(data)).toBe(true)
+    expect(isReadonly(data.inner)).toBe(true)
+  })
 })

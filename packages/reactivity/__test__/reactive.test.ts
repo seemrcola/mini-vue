@@ -69,4 +69,16 @@ describe('响应式测试', () => {
     stop(runner)
     expect(onStop).toHaveBeenCalled()
   })
+
+  it('reactive嵌套', () => {
+    const outer = {
+      name: 1,
+      inner: {
+        name: 100,
+      },
+    }
+    const data = reactive(outer)
+    expect(isReactive(data)).toBe(true)
+    expect(isReactive(data.inner)).toBe(true)
+  })
 })
