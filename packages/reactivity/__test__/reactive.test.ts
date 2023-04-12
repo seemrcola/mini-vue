@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { isReactive, reactive } from '../src/reactive'
+import { isReactive, reactive, shallowReactive } from '../src/reactive'
 import { effect, stop } from '../src/effect'
 
 describe('响应式测试', () => {
@@ -80,5 +80,24 @@ describe('响应式测试', () => {
     const data = reactive(outer)
     expect(isReactive(data)).toBe(true)
     expect(isReactive(data.inner)).toBe(true)
+  })
+
+  it('shallow reactive', () => {
+    const outer = {
+      name: 1,
+      inner: {
+        name: 100,
+      },
+    }
+    const data = shallowReactive(outer)
+    let x, y
+    const runner = effect(() => {
+      x = data.name
+      y = data.inner.name
+    })
+    data.name = 'seemr'
+    data.inner.name = 'cola'
+    expect(x).toBe('seemr')
+    expect(y).toBe(100)
   })
 })

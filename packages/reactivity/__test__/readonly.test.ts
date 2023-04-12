@@ -1,5 +1,6 @@
 import { describe, expect, it, vitest } from 'vitest'
-import { isReadonly, reactive, readonly } from '../src/reactive'
+import { isReadonly, reactive, readonly, shallowReadonly } from '../src/reactive'
+import { effect } from '../src/effect'
 
 describe('响应式测试', () => {
   it('happy path', () => {
@@ -29,5 +30,24 @@ describe('响应式测试', () => {
     const data = readonly(outer)
     expect(isReadonly(data)).toBe(true)
     expect(isReadonly(data.inner)).toBe(true)
+  })
+
+  it('shallow reactive', () => {
+    const outer = {
+      name: 1,
+      inner: {
+        name: 100,
+      },
+    }
+    const data = shallowReadonly(outer)
+    let x, y
+    const runner = effect(() => {
+      x = data.name
+      y = data.inner.name
+    })
+    data.name = 'seemr'
+    data.inner.name = 'cola'
+    expect(x).toBe(1)
+    expect(y).toBe(100)
   })
 })
