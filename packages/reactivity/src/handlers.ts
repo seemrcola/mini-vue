@@ -1,9 +1,9 @@
-import { isObject } from '../../share'
+import { extend, isObject } from '../../share'
 import { track, trigger } from './effect'
 import { ReactiveFlags } from './enums'
 import { reactive, readonly } from './reactive'
 
-function createGetter(isReadonly = false) {
+function createGetter(isReadonly = false, isShallow = false) {
   return function get(target, key) {
     // 当我们是想读取is_reactive的时候 直接return一个结果就行
     if (key === ReactiveFlags.IS_REACTIVE)
@@ -13,7 +13,12 @@ function createGetter(isReadonly = false) {
       return isReadonly
 
     const res = Reflect.get(target, key)
-    // 默认深度监听
+
+    // shallow
+    if (isShallow)
+      return res
+
+    // 深度监听
     if (isObject(res))
       return isReadonly ? readonly(res) : reactive(res)
 
@@ -35,6 +40,7 @@ function createSetter() {
 const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
+const shallowReadonlyGet = createGetter(true, true)
 
 export const mutableHanlders = {
   get,
@@ -48,3 +54,7 @@ export const readonlyHanlders = {
     return true
   },
 }
+
+export const shallowReadonlyHandlers = extend({}, readonlyHanlders, {
+  get: shallowReadonlyGet,
+})

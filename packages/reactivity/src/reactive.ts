@@ -1,4 +1,4 @@
-import { mutableHanlders, readonlyHanlders } from './handlers'
+import { mutableHanlders, readonlyHanlders, shallowReadonlyHandlers } from './handlers'
 import { ReactiveFlags } from './enums'
 /**
  * @param raw  接受一个对象 给这个对象设置traps来处理收集和触发操作
@@ -10,6 +10,10 @@ export function reactive(raw: { [key: string]: any }) {
 
 export function readonly(raw: { [key: string]: any }) {
   return createActiveObject(raw, readonlyHanlders)
+}
+
+export function shallowReadonly(raw: { [key: string]: any }) {
+  return createActiveObject(raw, shallowReadonlyHandlers)
 }
 
 export function createActiveObject(
