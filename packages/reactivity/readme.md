@@ -44,8 +44,7 @@ document.body.innerText依赖obj.text属性，某一时刻obj.text被修改了�
 ```js
 runner.effect = _effect
 ```
-不在fn上直接处理的其中一个原因就是尽量不去更改到用户的代码，fn时用户代码。
-2.
+不在fn上直接处理的其中一个原因就是尽量不去更改到用户的代码，fn是用户代码。
 
 
 
